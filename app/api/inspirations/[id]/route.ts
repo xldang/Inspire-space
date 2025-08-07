@@ -4,10 +4,11 @@ import { prisma } from '@/lib/prisma'
 
 export async function GET(
   req: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const { userId } = auth()
+    const { id } = await params
     
     if (!userId) {
       return NextResponse.json({ error: '未授权' }, { status: 401 })
@@ -15,7 +16,7 @@ export async function GET(
 
     const inspiration = await prisma.inspiration.findUnique({
       where: {
-        id: params.id,
+        id: id,
         userId // 确保只能访问自己的灵感
       },
       include: {
@@ -46,10 +47,11 @@ export async function GET(
 
 export async function PATCH(
   req: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const { userId } = auth()
+    const { id } = await params
     
     if (!userId) {
       return NextResponse.json({ error: '未授权' }, { status: 401 })
@@ -61,7 +63,7 @@ export async function PATCH(
     // 验证灵感是否存在且属于当前用户
     const existingInspiration = await prisma.inspiration.findUnique({
       where: {
-        id: params.id,
+        id: id,
         userId
       }
     })
@@ -108,7 +110,7 @@ export async function PATCH(
 
     const inspiration = await prisma.inspiration.update({
       where: {
-        id: params.id
+        id: id
       },
       data: updateData,
       include: {
@@ -132,10 +134,11 @@ export async function PATCH(
 
 export async function DELETE(
   req: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const { userId } = auth()
+    const { id } = await params
     
     if (!userId) {
       return NextResponse.json({ error: '未授权' }, { status: 401 })
@@ -143,7 +146,7 @@ export async function DELETE(
 
     const inspiration = await prisma.inspiration.findUnique({
       where: {
-        id: params.id,
+        id: id,
         userId
       }
     })
@@ -157,7 +160,7 @@ export async function DELETE(
 
     await prisma.inspiration.delete({
       where: {
-        id: params.id
+        id: id
       }
     })
 
