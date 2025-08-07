@@ -1,0 +1,16 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(mkdir:*)",
+      "Bash(npx:*)",
+      "Bash(grep:*)",
+      "Bash(sed:*)",
+      "Bash(npm run build)",
+      "Bash(cp:*)",
+      "Bash(npm install:*)",
+      "Bash(node:*)",
+      "Bash(OPENROUTER_API_KEY=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 npx tsx -e \"\nimport { getInspirationSuggestion } from ''./lib/openrouter.ts'';\n\nasync function test() {\n  try {\n    console.log(''测试真实API调用...'');\n    const suggestion = await getInspirationSuggestion(''我想学习编程'');\n    console.log(''✅ 成功获得建议:'', suggestion.substring(0, 300) + ''...'');\n  } catch (error) {\n    console.error(''❌ 错误:'', error.message);\n  }\n}\ntest();\n\")"
+    ],
+    "deny": []
+  }
+}
