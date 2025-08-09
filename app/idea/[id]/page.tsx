@@ -5,6 +5,7 @@ import { useParams, useRouter } from 'next/navigation'
 import { ArrowLeft, Edit3, Save, X } from 'lucide-react'
 import { Inspiration } from '@prisma/client'
 import { format } from 'date-fns'
+import ReactMarkdown from 'react-markdown'
 
 interface ExtendedInspiration extends Inspiration {
   user: {
@@ -22,6 +23,7 @@ export default function IdeaDetailPage() {
   const [isEditing, setIsEditing] = useState(false)
   const [editingContent, setEditingContent] = useState('')
   const [editingSuggestion, setEditingSuggestion] = useState('')
+  const [editingImplementationPlan, setEditingImplementationPlan] = useState('')
 
   useEffect(() => {
     if (id) {
@@ -37,6 +39,7 @@ export default function IdeaDetailPage() {
         setInspiration(data.inspiration)
         setEditingContent(data.inspiration.content)
         setEditingSuggestion(data.inspiration.suggestion || '')
+        setEditingImplementationPlan(data.inspiration.implementationPlan || '')
       } else {
         router.push('/')
       }
@@ -77,6 +80,7 @@ export default function IdeaDetailPage() {
         body: JSON.stringify({
           content: editingContent,
           suggestion: editingSuggestion,
+          implementationPlan: editingImplementationPlan,
         }),
       })
 
@@ -93,6 +97,7 @@ export default function IdeaDetailPage() {
   const handleCancelEdit = () => {
     setEditingContent(inspiration?.content || '')
     setEditingSuggestion(inspiration?.suggestion || '')
+    setEditingImplementationPlan(inspiration?.implementationPlan || '')
     setIsEditing(false)
   }
 
@@ -240,15 +245,33 @@ export default function IdeaDetailPage() {
                 className="w-full min-h-[300px] p-3 border border-gray-300 rounded-lg resize-none"
               />
             ) : (
-              <div className="prose max-w-none">
-                <div 
-                  className="whitespace-pre-wrap text-gray-800"
-                  dangerouslySetInnerHTML={{ __html: inspiration.suggestion.replace(/\n/g, '<br/>') }}
-                />
+              <div className="prose max-w-none text-gray-800">
+                <ReactMarkdown>{inspiration.suggestion}</ReactMarkdown>
               </div>
             )}
           </div>
         )}
+
+        {/* Implementation Plan */}
+        <div className="bg-white rounded-xl p-6 shadow-sm">
+          <h3 className="text-lg font-semibold mb-4">灵感落地方案</h3>
+          {isEditing ? (
+            <textarea
+              value={editingImplementationPlan}
+              onChange={(e) => setEditingImplementationPlan(e.target.value)}
+              className="w-full min-h-[200px] p-3 border border-gray-300 rounded-lg resize-none"
+              placeholder="请填写您将如何一步步实现这个灵感..."
+            />
+          ) : (
+            <div className="prose max-w-none text-gray-800">
+              {inspiration.implementationPlan ? (
+                <ReactMarkdown>{inspiration.implementationPlan}</ReactMarkdown>
+              ) : (
+                <p className="text-gray-500 italic">尚未填写落地方案。</p>
+              )}
+            </div>
+          )}
+        </div>
 
         {/* Metadata */}
         <div className="bg-white rounded-xl p-6 shadow-sm">

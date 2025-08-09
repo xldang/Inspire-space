@@ -58,7 +58,7 @@ export async function PATCH(
     }
 
     const body = await req.json()
-    const { content, suggestion, status } = body
+    const { content, suggestion, status, implementationPlan } = body
 
     // 验证灵感是否存在且属于当前用户
     const existingInspiration = await prisma.inspiration.findUnique({
@@ -106,6 +106,10 @@ export async function PATCH(
         )
       }
       updateData.status = status
+    }
+
+    if (implementationPlan !== undefined) {
+      updateData.implementationPlan = implementationPlan.trim() || null
     }
 
     const inspiration = await prisma.inspiration.update({
