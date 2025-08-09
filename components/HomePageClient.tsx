@@ -33,7 +33,9 @@ export default function HomePageClient({
   // Use the initialIsSignedIn prop, and update if Clerk's state changes
   const [isSignedIn, setIsSignedIn] = useState(initialIsSignedIn);
   useEffect(() => {
-    setIsSignedIn(clerkIsSignedIn);
+    if (typeof clerkIsSignedIn === 'boolean') {
+      setIsSignedIn(clerkIsSignedIn);
+    }
   }, [clerkIsSignedIn]);
 
   const fetchInspirations = async () => {
