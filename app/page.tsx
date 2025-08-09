@@ -6,8 +6,9 @@ import { SignInButton, SignUpButton } from '@clerk/nextjs'
 import IdeaInput from '@/components/IdeaInput'
 import IdeaCard from '@/components/IdeaCard'
 import { Inspiration } from '@prisma/client'
-import { Plus, Lightbulb, Calendar, CheckCircle } from 'lucide-react'
+import { Plus, Lightbulb, Calendar, CheckCircle, Settings } from 'lucide-react'
 import { format } from 'date-fns'
+import Link from 'next/link'
 
 interface ExtendedInspiration extends Inspiration {
   user: {
@@ -108,7 +109,12 @@ export default function HomePage() {
 
           <div className="flex items-center gap-4">
             {isSignedIn ? (
-              <UserButton / >
+              <>
+                <Link href="/admin/settings" title="设置" className="text-gray-500 hover:text-primary transition-colors">
+                  <Settings className="w-6 h-6" />
+                </Link>
+                <UserButton / >
+              </>
             ) : (
               <div className="flex gap-2">
                 <SignInButton>
