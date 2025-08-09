@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { auth } from '@clerk/nextjs/server'
+import { auth, clerkClient } from '@clerk/nextjs/server'
 import { prisma } from '@/lib/prisma'
 
 export async function GET() {
@@ -62,13 +62,17 @@ export async function POST(req: NextRequest) {
       )
     }
 
-    // Clerk应处理用户创建，但这里做一个保障
+    // 获取用户信息以确保邮箱正确
+    const user = await clerkClient.users.getUser(userId);
+    const userEmail = user.emailAddresses.find(e => e.id === user.primaryEmailAddressId)?.emailAddress || 'no-email@example.com';
+
+    // 创建或更新用户，确保邮箱信息正确
     await prisma.user.upsert({
       where: { clerkId: userId },
-      update: {},
+      update: { email: userEmail },
       create: {
         clerkId: userId,
-        email: body.userEmail || 'no-email@example.com', // 尝试从请求获取或使用占位符
+        email: userEmail,
       }
     })
 
