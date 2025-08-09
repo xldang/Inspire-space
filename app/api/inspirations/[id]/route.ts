@@ -1,6 +1,27 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { auth } from '@clerk/nextjs/server'
-import { prisma } from '@/lib/prisma'
+import { PrismaClient } from '@prisma/client'
+
+// Lazy initialization of Prisma client for build environments
+let prisma: PrismaClient | null = null
+
+function getPrisma() {
+  if (!prisma) {
+    try {
+      prisma = new PrismaClient({
+        datasources: {
+          db: {
+            url: process.env.DATABASE_URL || 'file:./dev.db'
+          }
+        }
+      })
+    } catch (error) {
+      console.warn('Prisma initialization failed:', error)
+      return null
+    }
+  }
+  return prisma
+}
 
 export async function GET(
   req: NextRequest,
@@ -14,7 +35,12 @@ export async function GET(
       return NextResponse.json({ error: '未授权' }, { status: 401 })
     }
 
-    const inspiration = await prisma.inspiration.findUnique({
+    const db = getPrisma()
+    if (!db) {
+      return NextResponse.json({ error: '数据库初始化失败' }, { status: 500 })
+    }
+
+    const inspiration = await db.inspiration.findUnique({
       where: {
         id: id,
         userId // 确保只能访问自己的灵感
@@ -60,8 +86,13 @@ export async function PATCH(
     const body = await req.json()
     const { content, suggestion, status } = body
 
+    const db = getPrisma()
+    if (!db) {
+      return NextResponse.json({ error: '数据库初始化失败' }, { status: 500 })
+    }
+
     // 验证灵感是否存在且属于当前用户
-    const existingInspiration = await prisma.inspiration.findUnique({
+    const existingInspiration = await db.inspiration.findUnique({
       where: {
         id: id,
         userId
@@ -108,7 +139,7 @@ export async function PATCH(
       updateData.status = status
     }
 
-    const inspiration = await prisma.inspiration.update({
+    const inspiration = await db.inspiration.update({
       where: {
         id: id
       },
@@ -144,7 +175,12 @@ export async function DELETE(
       return NextResponse.json({ error: '未授权' }, { status: 401 })
     }
 
-    const inspiration = await prisma.inspiration.findUnique({
+    const db = getPrisma()
+    if (!db) {
+      return NextResponse.json({ error: '数据库初始化失败' }, { status: 500 })
+    }
+
+    const inspiration = await db.inspiration.findUnique({
       where: {
         id: id,
         userId
@@ -158,7 +194,7 @@ export async function DELETE(
       )
     }
 
-    await prisma.inspiration.delete({
+    await db.inspiration.delete({
       where: {
         id: id
       }

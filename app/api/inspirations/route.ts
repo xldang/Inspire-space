@@ -1,6 +1,27 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { auth } from '@clerk/nextjs/server'
-import { prisma } from '@/lib/prisma'
+import { PrismaClient } from '@prisma/client'
+
+// Lazy initialization of Prisma client for build environments
+let prisma: PrismaClient | null = null
+
+function getPrisma() {
+  if (!prisma) {
+    try {
+      prisma = new PrismaClient({
+        datasources: {
+          db: {
+            url: process.env.DATABASE_URL || 'file:./dev.db'
+          }
+        }
+      })
+    } catch (error) {
+      console.warn('Prisma initialization failed:', error)
+      return null
+    }
+  }
+  return prisma
+}
 
 export async function GET() {
   try {
@@ -10,7 +31,12 @@ export async function GET() {
       return NextResponse.json({ error: '未授权' }, { status: 401 })
     }
 
-    const inspirations = await prisma.inspiration.findMany({
+    const db = getPrisma()
+    if (!db) {
+      return NextResponse.json({ inspirations: [] })
+    }
+
+    const inspirations = await db.inspiration.findMany({
       where: {
         userId
       },
@@ -63,7 +89,12 @@ export async function POST(req: NextRequest) {
     }
 
     // 创建或更新用户
-    await prisma.user.upsert({
+    const db = getPrisma()
+    if (!db) {
+      return NextResponse.json({ error: '数据库初始化失败' }, { status: 500 })
+    }
+
+    await db.user.upsert({
       where: { clerkId: userId },
       update: {},
       create: {
@@ -72,7 +103,7 @@ export async function POST(req: NextRequest) {
       }
     })
 
-    const inspiration = await prisma.inspiration.create({
+    const inspiration = await db.inspiration.create({
       data: {
         content: content.trim(),
         suggestion: suggestion?.trim() || null,

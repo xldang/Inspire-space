@@ -1,4 +1,4 @@
-const OPENROUTER_API_KEY = process.env.OPENROUTER_API_KEY;
+
 const OPENROUTER_API_URL = 'https://openrouter.ai/api/v1/chat/completions';
 
 export interface OpenRouterResponse {
@@ -9,9 +9,9 @@ export interface OpenRouterResponse {
   }>;
 }
 
-export async function getInspirationSuggestion(idea: string): Promise<string> {
-  if (!OPENROUTER_API_KEY) {
-    throw new Error('OPENROUTER_API_KEY 未配置');
+export async function getInspirationSuggestion(idea: string, apiKey: string): Promise<string> {
+  if (!apiKey) {
+    throw new Error('OpenRouter API Key 未提供');
   }
 
   try {
@@ -21,7 +21,7 @@ export async function getInspirationSuggestion(idea: string): Promise<string> {
     const response = await fetch(OPENROUTER_API_URL, {
       method: 'POST',
       headers: {
-        'Authorization': `Bearer ${OPENROUTER_API_KEY}`,
+        'Authorization': `Bearer ${apiKey}`,
         'Content-Type': 'application/json',
         'HTTP-Referer': 'https://inspire-space.vercel.app',
         'X-Title': 'InspireSpace',
