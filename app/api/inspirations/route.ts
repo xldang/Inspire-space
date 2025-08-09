@@ -1,27 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { auth } from '@clerk/nextjs/server'
-import { PrismaClient } from '@prisma/client'
-
-// Lazy initialization of Prisma client for build environments
-let prisma: PrismaClient | null = null
-
-function getPrisma() {
-  if (!prisma) {
-    try {
-      prisma = new PrismaClient({
-        datasources: {
-          db: {
-            url: process.env.DATABASE_URL || 'file:./dev.db'
-          }
-        }
-      })
-    } catch (error) {
-      console.warn('Prisma initialization failed:', error)
-      return null
-    }
-  }
-  return prisma
-}
+import { prisma } from '@/lib/prisma'
 
 export async function GET() {
   try {
@@ -31,12 +10,7 @@ export async function GET() {
       return NextResponse.json({ error: '未授权' }, { status: 401 })
     }
 
-    const db = getPrisma()
-    if (!db) {
-      return NextResponse.json({ inspirations: [] })
-    }
-
-    const inspirations = await db.inspiration.findMany({
+    const inspirations = await prisma.inspiration.findMany({
       where: {
         userId
       },
@@ -88,22 +62,17 @@ export async function POST(req: NextRequest) {
       )
     }
 
-    // 创建或更新用户
-    const db = getPrisma()
-    if (!db) {
-      return NextResponse.json({ error: '数据库初始化失败' }, { status: 500 })
-    }
-
-    await db.user.upsert({
+    // Clerk应处理用户创建，但这里做一个保障
+    await prisma.user.upsert({
       where: { clerkId: userId },
       update: {},
       create: {
         clerkId: userId,
-        email: 'temp@example.com', // Clerk会自动更新这个
+        email: body.userEmail || 'no-email@example.com', // 尝试从请求获取或使用占位符
       }
     })
 
-    const inspiration = await db.inspiration.create({
+    const inspiration = await prisma.inspiration.create({
       data: {
         content: content.trim(),
         suggestion: suggestion?.trim() || null,
