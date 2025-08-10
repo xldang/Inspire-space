@@ -27,8 +27,13 @@ export default function HomePageClient({
 }: HomePageClientProps) {
   const { user, isSignedIn: clerkIsSignedIn } = useUser();
   const [inspirations, setInspirations] = useState<ExtendedInspiration[]>(initialInspirations);
-  const [isLoading, setIsLoading] = useState(false); // Data is already loaded
+  const [isLoading, setIsLoading] = useState(false);
   const [filter, setFilter] = useState<'ALL' | 'ORIGINAL' | 'BUILDING' | 'ACHIEVED'>('ALL');
+
+  // Sync state with server-fetched props
+  useEffect(() => {
+    setInspirations(initialInspirations);
+  }, [initialInspirations]);
 
   // Use the initialIsSignedIn prop, and update if Clerk's state changes
   const [isSignedIn, setIsSignedIn] = useState(initialIsSignedIn);
