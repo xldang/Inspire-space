@@ -1,14 +1,23 @@
-import { clerkMiddleware } from '@clerk/nextjs/server';
+import { clerkMiddleware, createRouteMatcher } from '@clerk/nextjs/server';
 
-export default clerkMiddleware({
-  publicRoutes: ['/'],
+// Define the routes that are protected and require authentication.
+const isProtectedRoute = createRouteMatcher([
+  '/admin(.*)',
+  '/idea(.*)',
+]);
+
+export default clerkMiddleware((auth, req) => {
+  // If the route is a protected route, call auth().protect()
+  if (isProtectedRoute(req)) {
+    auth().protect();
+  }
 });
 
 export const config = {
   matcher: [
-    // 匹配所有路由，除了静态文件
-    '/((?!.+\\.[\\w]+$|_next).*)/',
-    '/',
+    // Skip Next.js internals and all static files, unless found in search params
+    '/((?!_next|[^?]*\.(?:html?|css|js(?!on)|jpe?g|webp|png|gif|svg|ttf|woff2?|ico|csv|docx?|xlsx?|zip|webmanifest)).*)',
+    // Always run for API routes
     '/(api|trpc)(.*)',
   ],
 };
