@@ -8,12 +8,12 @@ export default function robots(): MetadataRoute.Robots {
     rules: [
       {
         userAgent: '*', // 对所有爬虫生效
-        allow: '/', // 允许爬取所有根路径下的内容
-        // 禁止爬虫访问可能包含敏感信息或对SEO无价值的页面
+        allow: '/', // 允许访问首页和静态资源
+        // 禁止爬虫访问所有用户内容和功能性页面
         disallow: [
+          '/idea/', // 禁止访问所有灵感详情页
           '/admin/', 
-          '/idea/*/edit', // 所有灵感的编辑页
-          '/api/', // 所有API路由
+          '/api/',
         ],
       },
     ],

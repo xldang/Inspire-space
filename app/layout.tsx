@@ -6,15 +6,23 @@ import { ClerkProvider } from '@clerk/nextjs'
 const inter = Inter({ subsets: ['latin'], variable: '--font-inter' })
 
 export const metadata: Metadata = {
-  title: '灵感空间 - Inspire Space',
-  description: '记录并实现你的灵感想法，让AI帮你制定可执行的方案',
-  keywords: '灵感记录,目标实现,AI助手,创意管理',
-  authors: [{ name: '灵感空间团队' }],
+  title: '灵感空间 - 您的私人AI创意与项目管理助手',
+  description: '使用灵感空间（Inspire Space）捕捉、孵化和实现您的每一个想法。我们提供智能AI分析，将您的抽象概念转化为具体的行动方案，是您理想的创意管理与项目实践工具。',
+  keywords: '灵感管理, AI助手, 创意孵化, 项目管理, 想法实现, 个人工具, 生产力',
+  authors: [{ name: '灵感空间团队', url: 'https://www.fallinai.cn' }],
   viewport: 'width=device-width, initial-scale=1',
   openGraph: {
-    title: '灵感空间 - Inspire Space',
-    description: '记录并实现你的灵感想法，让AI帮你制定可执行的方案',
+    title: '灵感空间 - 您的私人AI创意与项目管理助手',
+    description: '使用灵感空间（Inspire Space）捕捉、孵化和实现您的每一个想法。我们提供智能AI分析，将您的抽象概念转化为具体的行动方案。',
+    url: 'https://www.fallinai.cn',
     type: 'website',
+    siteName: '灵感空间',
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: '灵感空间 - 您的私人AI创意与项目管理助手',
+    description: '从一个想法到具体行动方案，灵感空间是您首选的AI创意管理工具。',
+    // creator: '@YourTwitterHandle', // 如果您有Twitter账号
   },
 }
 
