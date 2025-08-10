@@ -59,7 +59,7 @@ export default function IdeaEditPage() {
     setIsSaving(true)
     try {
       const response = await fetch(`/api/inspirations/${id}`, {
-        method: 'PUT',
+        method: 'PATCH',
         headers: {
           'Content-Type': 'application/json',
         },
