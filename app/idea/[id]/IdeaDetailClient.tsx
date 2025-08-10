@@ -1,9 +1,8 @@
 'use client'
 
-import { useState, useEffect } from 'react'
-import { notFound, useRouter } from 'next/navigation'
-import { useAuth } from '@clerk/nextjs'
-import { Inspiration } from '@prisma/client'
+import { useState } from 'react';
+import { useRouter } from 'next/navigation';
+import { Inspiration, User } from '@prisma/client';
 import {
   ArrowLeft,
   Lightbulb,
@@ -14,17 +13,14 @@ import {
   FileText,
   Sparkles,
   Rocket,
-} from 'lucide-react'
-import Link from 'next/link'
-import { format } from 'date-fns'
-import ReactMarkdown from 'react-markdown'
+} from 'lucide-react';
+import Link from 'next/link';
+import { format } from 'date-fns';
+import ReactMarkdown from 'react-markdown';
 
-// 定义扩展后的灵感类型
+// The full inspiration object including the user, as fetched from the server
 interface ExtendedInspiration extends Inspiration {
-  user: {
-    clerkId: string
-    email: string
-  }
+  user: User;
 }
 
 interface IdeaDetailClientProps {
@@ -32,50 +28,49 @@ interface IdeaDetailClientProps {
 }
 
 export default function IdeaDetailClient({ inspiration }: IdeaDetailClientProps) {
-  const router = useRouter()
-  const [isDeleting, setIsDeleting] = useState(false)
+  const router = useRouter();
+  const [isDeleting, setIsDeleting] = useState(false);
   const id = inspiration.id;
 
   const handleDelete = async () => {
     const confirmed = window.confirm(
       '你确定要永久删除这个灵感吗？此操作无法撤销。'
-    )
+    );
     if (!confirmed) {
-      return
+      return;
     }
 
-    setIsDeleting(true)
+    setIsDeleting(true);
     try {
       const response = await fetch(`/api/inspirations/${id}`, {
         method: 'DELETE',
-      })
+      });
 
       if (!response.ok) {
-        throw new Error('删除失败，请稍后重试')
+        throw new Error('删除失败，请稍后重试');
       }
 
-      // 删除成功后，跳转到首页
-      router.push('/')
-      router.refresh() // 确保服务器数据刷新
+      // Deletion successful, navigate to the homepage
+      router.push('/');
+      router.refresh(); // Ensure server data is refreshed
     } catch (err) {
-      alert(err instanceof Error ? err.message : '删除过程中发生未知错误')
-      setIsDeleting(false)
+      alert(err instanceof Error ? err.message : '删除过程中发生未知错误');
+      setIsDeleting(false);
     }
-  }
-
+  };
 
   const getStatusChip = (status: string) => {
     switch (status) {
       case 'ORIGINAL':
-        return <span className="bg-gray-200 text-gray-800 px-2 py-1 rounded-full text-sm">原始构想</span>
+        return <span className="bg-gray-200 text-gray-800 px-2 py-1 rounded-full text-sm">原始构想</span>;
       case 'BUILDING':
-        return <span className="bg-blue-200 text-blue-800 px-2 py-1 rounded-full text-sm">筑梦中</span>
+        return <span className="bg-blue-200 text-blue-800 px-2 py-1 rounded-full text-sm">筑梦中</span>;
       case 'ACHIEVED':
-        return <span className="bg-green-200 text-green-800 px-2 py-1 rounded-full text-sm">已达成</span>
+        return <span className="bg-green-200 text-green-800 px-2 py-1 rounded-full text-sm">已达成</span>;
       default:
-        return null
+        return null;
     }
-  }
+  };
 
   const jsonLd = {
     '@context': 'https://schema.org',
@@ -88,18 +83,18 @@ export default function IdeaDetailClient({ inspiration }: IdeaDetailClientProps)
     'description': (inspiration.suggestion || inspiration.content).substring(0, 150),
     'author': {
       '@type': 'Person',
-      'name': inspiration.user.email, // 使用用户邮箱作为作者名
+      'name': inspiration.user.name || inspiration.user.email, // Use user name or email
     },
     'publisher': {
       '@type': 'Organization',
       'name': '灵感空间',
       'logo': {
         '@type': 'ImageObject',
-        'url': 'https://www.fallinai.cn/logo.png', // FIXME: 替换为您的logo地址
+        'url': 'https://www.fallinai.cn/logo.png', // FIXME: Replace with your logo URL
       },
     },
-    'datePublished': inspiration.createdAt,
-    'dateModified': inspiration.updatedAt,
+    'datePublished': inspiration.createdAt.toISOString(),
+    'dateModified': inspiration.updatedAt.toISOString(),
   };
 
   return (
@@ -195,5 +190,5 @@ export default function IdeaDetailClient({ inspiration }: IdeaDetailClientProps)
         </div>
       </div>
     </div>
-  )
+  );
 }
