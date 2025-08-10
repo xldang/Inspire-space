@@ -11,6 +11,9 @@ import {
   Loader2,
   Trash2,
   Edit,
+  FileText,
+  Sparkles,
+  Rocket,
 } from 'lucide-react'
 import Link from 'next/link'
 import { format } from 'date-fns'
@@ -166,15 +169,21 @@ export default function IdeaPage({ params }: { params: { id: string } }) {
           {getStatusChip(inspiration.status)}
         </div>
 
-        <div className="space-y-6 prose prose-lg max-w-none">
+        <div className="space-y-8 prose prose-lg max-w-none">
           <section>
-            <h2 className="text-xl font-semibold text-gray-800 border-b pb-2">原始想法</h2>
+            <div className="flex items-center gap-3 mb-3">
+              <FileText className="w-6 h-6 text-primary" />
+              <h2 className="text-xl font-semibold text-gray-800 m-0">原始想法</h2>
+            </div>
             <p className="mt-2 text-gray-700">{inspiration.content}</p>
           </section>
 
           {inspiration.suggestion && (
             <section>
-              <h2 className="text-xl font-semibold text-gray-800 border-b pb-2">AI 初步建议</h2>
+              <div className="flex items-center gap-3 mb-3">
+                <Sparkles className="w-6 h-6 text-primary" />
+                <h2 className="text-xl font-semibold text-gray-800 m-0">AI 初步建议</h2>
+              </div>
               <div className="mt-2 text-gray-700">
                 <ReactMarkdown>{inspiration.suggestion}</ReactMarkdown>
               </div>
@@ -183,7 +192,10 @@ export default function IdeaPage({ params }: { params: { id: string } }) {
 
           {inspiration.implementationPlan && (
             <section>
-              <h2 className="text-xl font-semibold text-gray-800 border-b pb-2">灵感落地方案</h2>
+              <div className="flex items-center gap-3 mb-3">
+                <Rocket className="w-6 h-6 text-primary" />
+                <h2 className="text-xl font-semibold text-gray-800 m-0">灵感落地方案</h2>
+              </div>
               <div className="mt-2 text-gray-700">
                 <ReactMarkdown>{inspiration.implementationPlan}</ReactMarkdown>
               </div>
