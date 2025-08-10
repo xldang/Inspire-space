@@ -183,7 +183,7 @@ export default function IdeaPage({ params }: { params: { id: string } }) {
 
           {inspiration.implementationPlan && (
             <section>
-              <h2 className="text-xl font-semibold text-gray-800 border-b pb-2">AI 生成的行动方案</h2>
+              <h2 className="text-xl font-semibold text-gray-800 border-b pb-2">灵感落地方案</h2>
               <div className="mt-2 text-gray-700">
                 <ReactMarkdown>{inspiration.implementationPlan}</ReactMarkdown>
               </div>
