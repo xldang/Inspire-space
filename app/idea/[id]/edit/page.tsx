@@ -1,62 +1,62 @@
 'use client'
 
-import { useState, useEffect } from 'react'
-import { notFound, useRouter, useParams } from 'next/navigation'
-import { useAuth } from '@clerk/nextjs'
-import { Inspiration } from '@prisma/client'
-import { ArrowLeft, Save, Loader2 } from 'lucide-react'
-import Link from 'next/link'
+import { useState, useEffect } from 'react';
+import { notFound, useRouter, useParams } from 'next/navigation';
+import { useSession } from 'next-auth/react';
+import { Inspiration } from '@prisma/client';
+import { ArrowLeft, Save, Loader2 } from 'lucide-react';
+import Link from 'next/link';
 
 export default function IdeaEditPage() {
-  const { id } = useParams() as { id: string }
-  const { isLoaded, userId } = useAuth()
-  const router = useRouter()
+  const { id } = useParams() as { id: string };
+  const { data: session, status } = useSession();
+  const router = useRouter();
 
-  const [inspiration, setInspiration] = useState<Inspiration | null>(null)
-  const [content, setContent] = useState('')
-  const [suggestion, setSuggestion] = useState('')
-  const [implementationPlan, setImplementationPlan] = useState('')
+  const [inspiration, setInspiration] = useState<Inspiration | null>(null);
+  const [content, setContent] = useState('');
+  const [suggestion, setSuggestion] = useState('');
+  const [implementationPlan, setImplementationPlan] = useState('');
   
-  const [isLoading, setIsLoading] = useState(true)
-  const [isSaving, setIsSaving] = useState(false)
-  const [error, setError] = useState<string | null>(null)
+  const [isLoading, setIsLoading] = useState(true);
+  const [isSaving, setIsSaving] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    if (isLoaded && !userId) {
-      router.push('/sign-in')
-      return
+    if (status === 'unauthenticated') {
+      router.push('/auth/signin');
+      return;
     }
 
-    if (isLoaded && userId) {
+    if (status === 'authenticated') {
       const fetchInspiration = async () => {
         try {
-          setIsLoading(true)
-          const response = await fetch(`/api/inspirations/${id}`)
+          setIsLoading(true);
+          const response = await fetch(`/api/inspirations/${id}`);
           if (response.status === 404) {
-            notFound()
-            return
+            notFound();
+            return;
           }
           if (!response.ok) {
-            throw new Error('获取灵感详情失败')
+            throw new Error('获取灵感详情失败');
           }
-          const data = await response.json()
-          const fetchedInspiration = data.inspiration
-          setInspiration(fetchedInspiration)
-          setContent(fetchedInspiration.content)
-          setSuggestion(fetchedInspiration.suggestion || '')
-          setImplementationPlan(fetchedInspiration.implementationPlan || '')
+          const data = await response.json();
+          const fetchedInspiration = data.inspiration;
+          setInspiration(fetchedInspiration);
+          setContent(fetchedInspiration.content);
+          setSuggestion(fetchedInspiration.suggestion || '');
+          setImplementationPlan(fetchedInspiration.implementationPlan || '');
         } catch (err) {
-          setError(err instanceof Error ? err.message : '未知错误')
+          setError(err instanceof Error ? err.message : '未知错误');
         } finally {
-          setIsLoading(false)
+          setIsLoading(false);
         }
-      }
-      fetchInspiration()
+      };
+      fetchInspiration();
     }
-  }, [id, isLoaded, userId, router])
+  }, [id, status, router]);
 
   const handleSave = async () => {
-    setIsSaving(true)
+    setIsSaving(true);
     try {
       const response = await fetch(`/api/inspirations/${id}`, {
         method: 'PATCH',
@@ -68,28 +68,26 @@ export default function IdeaEditPage() {
           suggestion,
           implementationPlan,
         }),
-      })
+      });
 
       if (!response.ok) {
-        throw new Error('保存失败，请稍后重试')
+        throw new Error('保存失败，请稍后重试');
       }
       
-      // 保存成功后，跳转回详情页
-      // router.refresh() 会刷新当前路由，包括服务器组件的数据
-      router.push(`/idea/${id}`)
-      router.refresh() 
+      router.push(`/idea/${id}`);
+      router.refresh(); 
     } catch (err) {
-      alert(err instanceof Error ? err.message : '保存过程中发生未知错误')
-      setIsSaving(false)
+      alert(err instanceof Error ? err.message : '保存过程中发生未知错误');
+      setIsSaving(false);
     }
-  }
+  };
 
-  if (isLoading) {
+  if (status === 'loading' || isLoading) {
     return (
       <div className="flex justify-center items-center min-h-[60vh]">
         <Loader2 className="w-8 h-8 animate-spin text-primary" />
       </div>
-    )
+    );
   }
 
   if (error) {
@@ -100,7 +98,7 @@ export default function IdeaEditPage() {
           返回详情页
         </Link>
       </div>
-    )
+    );
   }
 
   return (
@@ -175,5 +173,5 @@ export default function IdeaEditPage() {
         </div>
       </div>
     </div>
-  )
+  );
 }

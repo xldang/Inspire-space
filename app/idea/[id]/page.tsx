@@ -1,25 +1,31 @@
-import { prisma } from '@/lib/prisma'
-import { notFound } from 'next/navigation'
-import { Metadata } from 'next'
-import IdeaDetailClient from './IdeaDetailClient'
-import { auth } from '@clerk/nextjs/server'
+import { prisma } from '@/lib/prisma';
+import { notFound } from 'next/navigation';
+import { Metadata } from 'next';
+import IdeaDetailClient from './IdeaDetailClient';
+import { getServerSession } from 'next-auth/next';
+import { authOptions } from '@/pages/api/auth/[...nextauth]';
 
 type Props = {
   params: { id: string }
 }
 
+async function getUserSession() {
+  const session = await getServerSession(authOptions);
+  return session;
+}
+
 // 1. 生成动态元数据
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
-  const { userId } = auth()
-  if (!userId) {
+  const session = await getUserSession();
+  if (!session?.user?.id) {
     return {
       title: '灵感详情',
     }
   }
 
   const inspiration = await prisma.inspiration.findUnique({
-    where: { id: params.id, userId },
-  })
+    where: { id: params.id, userId: session.user.id },
+  });
 
   if (!inspiration) {
     return {
@@ -28,7 +34,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     }
   }
 
-  const description = `关于“${inspiration.content.substring(0, 100)}...”的灵感详情、AI建议和实施方案。`
+  const description = `关于“${inspiration.content.substring(0, 100)}...”的灵感详情、AI建议和实施方案。`;
 
   return {
     title: `灵感详情: ${inspiration.content.substring(0, 30)}...`,
@@ -46,33 +52,32 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
 // 2. 页面本身作为服务器组件
 export default async function IdeaPage({ params }: Props) {
-  const { userId } = auth()
-  if (!userId) {
-    // 可以重定向到登录页或显示未授权信息
-    // 为了简单起见，我们依赖Clerk中间件的处理
-    // 但在服务器组件中直接获取可以防止未授权用户看到任何内容
+  const session = await getUserSession();
+  if (!session?.user?.id) {
     notFound();
   }
 
   const inspiration = await prisma.inspiration.findUnique({
     where: { 
       id: params.id,
-      userId: userId, // 安全性：确保用户只能访问自己的灵感
+      userId: session.user.id, // 安全性：确保用户只能访问自己的灵感
     },
     include: {
         user: {
             select: {
-                clerkId: true,
+                id: true,
                 email: true,
+                name: true,
             }
         }
     }
-  })
+  });
 
   if (!inspiration) {
-    notFound()
+    notFound();
   }
 
   // 3. 将数据传递给客户端组件进行渲染
-  return <IdeaDetailClient inspiration={inspiration} />
+  // The type of `inspiration` from prisma now matches what IdeaDetailClient expects
+  return <IdeaDetailClient inspiration={inspiration as any} />;
 }
