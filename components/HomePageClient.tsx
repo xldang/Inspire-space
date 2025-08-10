@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { useSession, signOut } from 'next-auth/react'
 import Link from 'next/link'
 import IdeaInput from '@/components/IdeaInput'
@@ -25,17 +25,7 @@ export default function HomePageClient() {
 
   const isSignedIn = status === 'authenticated';
 
-  useEffect(() => {
-    if (status === 'authenticated') {
-      fetchInspirations();
-    } else if (status === 'unauthenticated') {
-      setInspirations([]);
-      setIsLoading(false);
-    }
-    // `status` is the dependency
-  }, [status]);
-
-  const fetchInspirations = async () => {
+  const fetchInspirations = useCallback(async () => {
     if (!isSignedIn) return;
 
     try {
@@ -58,7 +48,16 @@ export default function HomePageClient() {
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [isSignedIn]);
+
+  useEffect(() => {
+    if (status === 'authenticated') {
+      fetchInspirations();
+    } else if (status === 'unauthenticated') {
+      setInspirations([]);
+      setIsLoading(false);
+    }
+  }, [status, fetchInspirations]);
 
   const handleIdeaAdded = () => {
     fetchInspirations();
@@ -78,7 +77,7 @@ export default function HomePageClient() {
         setInspirations((prev) =>
           prev.map((inspiration) =>
             inspiration.id === id
-              ? { ...inspiration, status, updatedAt: new Date().toISOString() }
+              ? { ...inspiration, status, updatedAt: new Date() }
               : inspiration
           )
         );
