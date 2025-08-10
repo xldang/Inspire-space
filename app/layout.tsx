@@ -1,7 +1,7 @@
 import type { Metadata } from 'next'
 import { Inter } from 'next/font/google'
 import './globals.css'
-import { ClerkProvider } from '@clerk/nextjs'
+import AuthProvider from '@/components/AuthProvider'
 
 const inter = Inter({ subsets: ['latin'], variable: '--font-inter' })
 
@@ -32,14 +32,14 @@ export default function RootLayout({
   children: React.ReactNode
 }) {
   return (
-    <ClerkProvider>
-      <html lang="zh-CN" className={`${inter.variable} ${inter.className}`}>
-        <body className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-purple-50">
+    <html lang="zh-CN" className={`${inter.variable} ${inter.className}`}>
+      <body className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-purple-50">
+        <AuthProvider>
           <main className="container mx-auto px-4 py-8">
             {children}
           </main>
-        </body>
-      </html>
-    </ClerkProvider>
+        </AuthProvider>
+      </body>
+    </html>
   )
 }
