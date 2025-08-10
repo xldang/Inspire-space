@@ -1,7 +1,21 @@
 import { prisma } from '@/lib/prisma'
 import { auth } from '@clerk/nextjs/server'
-import HomePageClient from '../components/HomePageClient'
 import { Inspiration } from '@prisma/client'
+import dynamic from 'next/dynamic'
+
+// Dynamically import the main client component to reduce initial bundle size
+// and avoid long main-thread tasks.
+const HomePageClient = dynamic(
+  () => import('../components/HomePageClient'),
+  {
+    ssr: false, // Set to false if it heavily relies on client-side APIs like `window`
+    loading: () => (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
+      </div>
+    ),
+  }
+)
 
 // Define the extended type for inspirations, including user info
 interface ExtendedInspiration extends Inspiration {
