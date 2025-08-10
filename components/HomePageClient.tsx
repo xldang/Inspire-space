@@ -43,6 +43,14 @@ export default function HomePageClient({
     }
   }, [clerkIsSignedIn]);
 
+  useEffect(() => {
+    if (isSignedIn) {
+      fetchInspirations();
+    } else {
+      setInspirations([]); // Clear data on sign-out
+    }
+  }, [isSignedIn]);
+
   const fetchInspirations = async () => {
     if (!isSignedIn) return;
 
