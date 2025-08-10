@@ -147,7 +147,7 @@ export default function IdeaEditPage() {
 
           <section>
             <label htmlFor="implementationPlan" className="text-xl font-semibold text-gray-800 block mb-2">
-              AI 生成的行动方案
+              灵感落地方案
             </label>
             <textarea
               id="implementationPlan"
