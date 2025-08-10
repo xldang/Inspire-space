@@ -226,7 +226,7 @@ export default function HomePageClient() {
                 className={`px-4 py-2 rounded-lg transition-colors ${
                   filter === tab.value
                     ? 'bg-primary text-white'
-                    -                    : 'bg-white text-gray-600 hover:bg-gray-50'
+                    : 'bg-white text-gray-600 hover:bg-gray-50'
                 }`}
               >
                 {tab.label} ({tab.count})
