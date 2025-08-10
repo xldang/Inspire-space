@@ -286,19 +286,7 @@ export default function HomePageClient({
               <p className="text-gray-600 mb-8">
                 登录后开始记录你的灵感，让AI帮你把想法变成现实。
               </p>
-              <div className="flex gap-4 justify-center">
-                <SignInButton>
-                  <button className="px-6 py-3 text-primary border border-primary rounded-lg hover:bg-primary/5 transition-colors">
-                    登录账号
-                  </button>
-                </SignInButton>
-                <SignUpButton>
-                  <button className="px-6 py-3 bg-primary text-white rounded-lg hover:bg-primary/90 transition-colors"
-                  >
-                    免费注册
-                  </button>
-                </SignUpButton>
-              </div>
+              
             </div>
           </div>
         )}
