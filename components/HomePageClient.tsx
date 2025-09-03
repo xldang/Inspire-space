@@ -16,12 +16,17 @@ interface ExtendedInspiration extends Inspiration {
   }
 }
 
-// Note: The initial props from the server are no longer needed as we will fetch on client-side
 export default function HomePageClient() {
   const { data: session, status } = useSession();
   const [inspirations, setInspirations] = useState<ExtendedInspiration[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [filter, setFilter] = useState<'ALL' | 'ORIGINAL' | 'BUILDING' | 'ACHIEVED'>('ALL');
+
+  // State for the "Get Implementation Plan" feature
+  const [inspirationForPlan, setInspirationForPlan] = useState<string>('');
+  const [implementationPlan, setImplementationPlan] = useState<string>('');
+  const [implementationModel, setImplementationModel] = useState<string>('');
+  const [isGeneratingPlan, setIsGeneratingPlan] = useState<boolean>(false);
 
   const isSignedIn = status === 'authenticated';
 
@@ -35,7 +40,6 @@ export default function HomePageClient() {
         const data = await response.json();
         setInspirations(data.inspirations || []);
       } else {
-        // Handle error, maybe sign out user if 401
         if (response.status === 401) {
           signOut();
         }
@@ -87,6 +91,45 @@ export default function HomePageClient() {
     }
   };
 
+  const handleGetImplementationPlan = async () => {
+    if (!inspirationForPlan.trim()) {
+      alert('请输入您的灵感！'); // Basic validation
+      return;
+    }
+    if (!isSignedIn) {
+      alert('请先登录才能获取实现方案。');
+      return;
+    }
+
+    setIsGeneratingPlan(true);
+    setImplementationPlan(''); // Clear previous plan
+    setImplementationModel(''); // Clear previous model
+
+    try {
+      const response = await fetch('/api/parse-idea', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ idea: inspirationForPlan }),
+      });
+
+      const data = await response.json();
+
+      if (response.ok && data.success) {
+        setImplementationPlan(data.suggestion);
+        setImplementationModel(data.model);
+      } else {
+        setImplementationPlan(`获取方案失败: ${data.error || '未知错误'}`);
+      }
+    } catch (error) {
+      console.error('获取实现方案时出错:', error);
+      setImplementationPlan('获取方案时发生网络错误。');
+    } finally {
+      setIsGeneratingPlan(false);
+    }
+  };
+
   const filteredInspirations = inspirations.filter((inspiration) => {
     if (filter === 'ALL') return true;
     return inspiration.status === filter;
@@ -112,14 +155,16 @@ export default function HomePageClient() {
       {/* Header */}
       <header className="mb-8">
         <div className="flex justify-between items-center mb-6">
-          <div>
-            <h1 className="text-4xl font-bold text-gray-900 mb-2">
-              ✨ 灵感空间
-            </h1>
-            <p className="text-gray-600 text-lg">
-              记录并实现你的每一个灵感
-            </p>
-          </div>
+          <Link href="/" className="block">
+            <div>
+              <h1 className="text-4xl font-bold text-gray-900 mb-2">
+                ✨ 灵感空间
+              </h1>
+              <p className="text-gray-600 text-lg">
+                记录并实现你的每一个灵感
+              </p>
+            </div>
+          </Link>
 
           <div className="flex items-center gap-4">
             {isSignedIn ? (
@@ -191,7 +236,15 @@ export default function HomePageClient() {
         {/* Inspiration Input */}
         {isSignedIn && (
           <section className="animate-fade-in">
-            <IdeaInput onIdeaAdded={handleIdeaAdded} />
+            <IdeaInput
+              onIdeaAdded={handleIdeaAdded}
+              implementationPlan={implementationPlan}
+              implementationModel={implementationModel}
+              isGeneratingPlan={isGeneratingPlan}
+              handleGetImplementationPlan={handleGetImplementationPlan}
+              inspirationForPlan={inspirationForPlan}
+              setInspirationForPlan={setInspirationForPlan}
+            />
           </section>
         )}
 

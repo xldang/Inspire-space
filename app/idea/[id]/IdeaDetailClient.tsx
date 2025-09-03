@@ -132,7 +132,7 @@ export default function IdeaDetailClient({ inspiration }: IdeaDetailClientProps)
           {getStatusChip(inspiration.status)}
         </div>
 
-        <div className="space-y-8 prose prose-lg max-w-none">
+        <div className="space-y-8 prose prose-base max-w-none">
           <section>
             <div className="flex items-center gap-3 mb-3">
               <FileText className="w-6 h-6 text-primary" />
@@ -147,7 +147,7 @@ export default function IdeaDetailClient({ inspiration }: IdeaDetailClientProps)
                 <Sparkles className="w-6 h-6 text-primary" />
                 <h2 className="text-xl font-semibold text-gray-800 m-0">AI 初步建议</h2>
               </div>
-              <div className="mt-2 text-gray-700">
+              <div className="mt-2 text-gray-700 h-96 overflow-y-auto">
                 <ReactMarkdown>{inspiration.suggestion}</ReactMarkdown>
               </div>
             </section>
@@ -159,7 +159,7 @@ export default function IdeaDetailClient({ inspiration }: IdeaDetailClientProps)
                 <Rocket className="w-6 h-6 text-primary" />
                 <h2 className="text-xl font-semibold text-gray-800 m-0">灵感落地方案</h2>
               </div>
-              <div className="mt-2 text-gray-700">
+              <div className="mt-2 text-gray-700 h-96 overflow-y-auto">
                 <ReactMarkdown>{inspiration.implementationPlan}</ReactMarkdown>
               </div>
             </section>

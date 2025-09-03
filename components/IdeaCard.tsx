@@ -58,7 +58,7 @@ export default function IdeaCard({ inspiration, onStatusChange }: IdeaCardProps)
     <div className="bg-white rounded-xl shadow-sm hover:shadow-md transition-shadow p-6 border border-gray-100">
       <div className="flex justify-between items-start mb-4">
         <div className="flex-1">
-          <h3 className="text-lg font-semibold text-gray-900 mb-2">
+          <h3 className="text-base font-semibold text-gray-900 mb-2">
             {formatContent(inspiration.content)}
           </h3>
           

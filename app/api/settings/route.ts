@@ -19,11 +19,9 @@ export async function GET() {
       return NextResponse.json({ error: '未授权' }, { status: 401 });
     }
 
-    const setting = await prisma.setting.findUnique({
-      where: { key: 'OPENROUTER_API_KEY' },
-    });
+    const settings = await prisma.setting.findMany();
 
-    return NextResponse.json({ value: setting?.value || '' });
+    return NextResponse.json(settings);
   } catch (error) {
     console.error('获取设置失败:', error);
     return NextResponse.json({ error: '服务器错误' }, { status: 500 });
@@ -38,21 +36,19 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: '未授权' }, { status: 401 });
     }
 
-    const { key, value } = await req.json();
+    const settings: { key: string; value: string }[] = await req.json();
 
-    if (key !== 'OPENROUTER_API_KEY') {
-      return NextResponse.json({ error: '无效的 Key' }, { status: 400 });
+    for (const setting of settings) {
+      if (typeof setting.key !== 'string' || typeof setting.value !== 'string') {
+        return NextResponse.json({ error: '无效的设置格式' }, { status: 400 });
+      }
+
+      await prisma.setting.upsert({
+        where: { key: setting.key },
+        update: { value: setting.value },
+        create: { key: setting.key, value: setting.value },
+      });
     }
-
-    if (typeof value !== 'string') {
-      return NextResponse.json({ error: '无效的 Value' }, { status: 400 });
-    }
-
-    await prisma.setting.upsert({
-      where: { key },
-      update: { value },
-      create: { key, value },
-    });
 
     return NextResponse.json({ success: true });
   } catch (error) {

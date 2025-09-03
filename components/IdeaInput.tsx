@@ -6,38 +6,33 @@ import { Loader2, Sparkles, Check, RefreshCw } from 'lucide-react';
 
 interface IdeaInputProps {
   onIdeaAdded: () => void;
+  implementationPlan: string;
+  implementationModel: string;
+  isGeneratingPlan: boolean;
+  handleGetImplementationPlan: () => Promise<void>;
+  inspirationForPlan: string;
+  setInspirationForPlan: (value: string) => void;
 }
 
-interface SuggestionData {
-  suggestion: string;
-  idea: string;
-}
-
-export default function IdeaInput({ onIdeaAdded }: IdeaInputProps) {
-  const [idea, setIdea] = useState('');
-  const [isLoading, setIsLoading] = useState(false);
-  const [suggestion, setSuggestion] = useState<string | null>(null);
+export default function IdeaInput({
+  onIdeaAdded,
+  implementationPlan,
+  implementationModel,
+  isGeneratingPlan,
+  handleGetImplementationPlan,
+  inspirationForPlan,
+  setInspirationForPlan,
+}: IdeaInputProps) {
   const [showSuggestion, setShowSuggestion] = useState(false);
 
   const handleSubmit = async () => {
-    if (!idea.trim()) return;
-
-    setIsLoading(true);
-    try {
-      const response = await axios.post('/api/parse-idea', { idea });
-      setSuggestion(response.data.suggestion);
-      setShowSuggestion(true);
-    } catch (error) {
-      console.error('获取AI建议失败:', error);
-      setSuggestion('抱歉，获取建议时出现问题，请稍后重试。');
-      setShowSuggestion(true);
-    } finally {
-      setIsLoading(false);
-    }
+    if (!inspirationForPlan.trim()) return;
+    await handleGetImplementationPlan();
+    setShowSuggestion(true);
   };
 
   const handleAcceptSuggestion = async () => {
-    if (!suggestion) return;
+    if (!implementationPlan) return;
 
     try {
       const response = await fetch('/api/inspirations', {
@@ -46,14 +41,13 @@ export default function IdeaInput({ onIdeaAdded }: IdeaInputProps) {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          content: idea,
-          suggestion: suggestion,
+          content: inspirationForPlan,
+          suggestion: implementationPlan,
         }),
       });
 
       if (response.ok) {
-        setIdea('');
-        setSuggestion(null);
+        setInspirationForPlan('');
         setShowSuggestion(false);
         onIdeaAdded();
       }
@@ -63,24 +57,13 @@ export default function IdeaInput({ onIdeaAdded }: IdeaInputProps) {
   };
 
   const handleRegenerate = async () => {
-    if (!idea.trim()) return;
-
-    setIsLoading(true);
-    try {
-      const response = await axios.post('/api/parse-idea', { idea });
-      setSuggestion(response.data.suggestion);
-    } catch (error) {
-      console.error('重新获取建议失败:', error);
-      setSuggestion('抱歉，重新获取建议时出现问题，请稍后重试。');
-    } finally {
-      setIsLoading(false);
-    }
+    if (!inspirationForPlan.trim()) return;
+    await handleGetImplementationPlan();
   };
 
   const handleCancel = () => {
     setShowSuggestion(false);
-    setSuggestion(null);
-    setIdea('');
+    setInspirationForPlan('');
   };
 
   return (
@@ -98,8 +81,8 @@ export default function IdeaInput({ onIdeaAdded }: IdeaInputProps) {
 
           <div className="space-y-4">
             <textarea
-              value={idea}
-              onChange={(e) => setIdea(e.target.value)}
+              value={inspirationForPlan}
+              onChange={(e) => setInspirationForPlan(e.target.value)}
               placeholder="在这里写下你的灵感想法...\n例如：我想学习一门新技能、我想做一个副业项目、我想改善我的生活习惯..."
               className="w-full min-h-[120px] p-4 border border-gray-200 rounded-xl focus:ring-2 focus:ring-primary focus:border-transparent resize-none text-gray-900 placeholder-gray-500"
               maxLength={1000}
@@ -107,15 +90,15 @@ export default function IdeaInput({ onIdeaAdded }: IdeaInputProps) {
             
             <div className="flex items-center justify-between">
               <span className="text-sm text-gray-500">
-                {idea.length}/1000 字符
+                {inspirationForPlan.length}/1000 字符
               </span>
               
               <button
                 onClick={handleSubmit}
-                disabled={!idea.trim() || isLoading}
+                disabled={!inspirationForPlan.trim() || isGeneratingPlan}
                 className="inline-flex items-center px-6 py-3 bg-primary text-white rounded-lg hover:bg-primary/90 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
               >
-                {isLoading ? (
+                {isGeneratingPlan ? (
                   <>
                     <Loader2 className="w-4 h-4 mr-2 animate-spin" />
                     AI分析中...
@@ -135,16 +118,18 @@ export default function IdeaInput({ onIdeaAdded }: IdeaInputProps) {
           <div className="mb-4">
             <h3 className="text-lg font-semibold text-gray-900 mb-2">你的灵感</h3>
             <div className="p-4 bg-gray-50 rounded-lg">
-              <p className="text-gray-800">{idea}</p>
+              <p className="text-gray-800">{inspirationForPlan}</p>
             </div>
           </div>
 
           <div className="mb-6">
-            <h3 className="text-lg font-semibold text-gray-900 mb-3">AI建议的最小可实现方案</h3>
+            <h3 className="text-lg font-semibold text-gray-900 mb-3">
+              AI建议的最小可实现方案 (由 {implementationModel} 生成)
+            </h3>
             <div className="prose prose-sm max-w-none text-gray-800">
-              <div 
+              <div
                 className="whitespace-pre-wrap bg-gradient-to-br from-blue-50 to-purple-50 p-4 rounded-lg border border-blue-100"
-                dangerouslySetInnerHTML={{ __html: suggestion?.replace(/\n/g, '<br/>') || '' }}
+                dangerouslySetInnerHTML={{ __html: implementationPlan.replace(/\n/g, '<br/>') }}
               />
             </div>
           </div>
@@ -160,10 +145,10 @@ export default function IdeaInput({ onIdeaAdded }: IdeaInputProps) {
             
             <button
               onClick={handleRegenerate}
-              disabled={isLoading}
+              disabled={isGeneratingPlan}
               className="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 transition-colors"
             >
-              <RefreshCw className={`w-4 h-4 mr-2 ${isLoading ? 'animate-spin' : ''}`} />
+              <RefreshCw className={`w-4 h-4 mr-2 ${isGeneratingPlan ? 'animate-spin' : ''}`} />
               再次思考
             </button>
             

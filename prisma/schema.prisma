@@ -59,9 +59,9 @@ model VerificationToken {
 
 model Inspiration {
   id                 String    @id @default(cuid())
-  content            String // 原始灵感内容
-  suggestion         String? // AI返回的实现建议
-  implementationPlan String? // 灵感落地方案
+  content            String    @db.Text // 原始灵感内容
+  suggestion         String?   @db.Text // AI返回的实现建议
+  implementationPlan String?   @db.Text // 灵感落地方案
   status             String    @default("ORIGINAL") // "ORIGINAL" | "BUILDING" | "ACHIEVED"
   createdAt          DateTime  @default(now())
   updatedAt          DateTime  @updatedAt
@@ -76,5 +76,5 @@ model Inspiration {
 model Setting {
   id    String @id @default(cuid())
   key   String @unique
-  value String
+  value String @db.Text
 }
