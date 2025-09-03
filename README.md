@@ -14,16 +14,16 @@
 - **后端**: Next.js (App & Pages API Routes)
 - **数据库**: [PostgreSQL](https://www.postgresql.org/)
 - **ORM**: [Prisma](https://www.prisma.io/)
-- **用户认证**: [Clerk](https://clerk.com/)
+- **用户认证**: [NextAuth.js](https://next-auth.js.org/)
 - **AI 服务**: [OpenRouter](https://openrouter.ai/)
 - **UI**: [Lucide React](https://lucide.dev/guide/packages/lucide-react) (图标), [React Markdown](https://github.com/remarkjs/react-markdown)
 - **类型检查**: [TypeScript](https://www.typescriptlang.org/)
 
 ## 🗃️ 数据模型
 
-项目使用 Prisma 管理数据库模型，定义于 `prisma/schema.prisma`。主要包含三个模型：
+项目使用 Prisma 管理数据库模型，定义于 `prisma/schema.prisma`。主要包含以下模型：
 
--   **`User`**: 存储用户信息，通过 `clerkId` 与 Clerk 服务关联。
+-   **`User`**, **`Account`**, **`Session`**: 由 NextAuth.js 用于处理用户认证和会话管理。
 -   **`Inspiration`**: 存储灵感的核心数据。
     -   `content`: 原始灵感内容。
     -   `suggestion`: AI 生成的初步建议。
@@ -41,11 +41,12 @@
 2.  **导入项目**: 登录 Vercel，从您的 GitHub 仓库导入该项目。
 3.  **连接数据库**:
     *   在 Vercel 的项目仪表盘中，进入 "Storage" 标签页。
-    *   创建一个新的 "Postgres" 数据库实例并连接到您的项目。Vercel 会自动为您配置所有相关的数据库环境变量。
-4.  **配置 Clerk 密钥**:
-    *   在项目的 "Settings" -> "Environment Variables" 中，添加以下两个必需的 Clerk 密钥：
-        *   `NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY`
-        *   `CLERK_SECRET_KEY`
+    *   创建一个新的 "Postgres" 数据库实例并连接到您的项目。Vercel 会自动为您配置 `DATABASE_URL` 环境变量。
+4.  **配置环境变量**:
+    *   在项目的 "Settings" -> "Environment Variables" 中，添加以下变量：
+        *   `NEXTAUTH_SECRET`: 一个用于加密 JWT 的随机字符串。你可以使用 `openssl rand -hex 32` 命令生成。
+        *   `NEXTAUTH_URL`: 你的应用的线上 URL，例如 `https://your-app-name.vercel.app`。
+    *   如果你想配置 OAuth 提供商 (例如 GitHub)，还需要添加对应的 `CLIENT_ID` 和 `CLIENT_SECRET`。
 5.  **部署**: 保存环境变量后，Vercel 将自动开始构建和部署。
 6.  **配置 OpenRouter API 密钥**:
     *   部署成功后，访问您的应用线上地址。
@@ -56,7 +57,6 @@
 
 1.  **环境准备**:
     *   [Node.js](https://nodejs.org/en) (v20.x 或更高版本)
-    *   [pnpm](https://pnpm.io/installation) (或 npm/yarn)
     *   一个本地或远程的 [PostgreSQL](https://www.postgresql.org/download/) 数据库实例。
 
 2.  **安装与配置**:
@@ -77,9 +77,10 @@
     # 1. 填入你的 PostgreSQL 数据库连接字符串
     DATABASE_URL="postgresql://USER:PASSWORD@HOST:PORT/DATABASE"
 
-    # 2. 填入从 Clerk Dashboard 获取的开发密钥
-    NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=
-    CLERK_SECRET_KEY=
+    # 2. 填入 NextAuth.js 所需的变量
+    # 使用 `openssl rand -hex 32` 生成一个随机字符串
+    NEXTAUTH_SECRET=
+    NEXTAUTH_URL=http://localhost:3000
 
     # 3. 填入你的 OpenRouter API 密钥
     OPENROUTER_API_KEY=
