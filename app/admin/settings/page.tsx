@@ -187,16 +187,33 @@ export default function AdminSettingsPage() {
   }
 
   return (
-    <div className="bg-white rounded-lg shadow-md p-6 max-w-4xl mx-auto">
-      <h1 className="text-3xl font-bold mb-8 text-gray-800 border-b pb-4">管理员设置</h1>
-      <div className="space-y-8">
-        {/* API and Model Settings Card */}
-        <div className="p-6 bg-gray-50 rounded-lg border border-gray-200 shadow-sm">
-          <h2 className="text-xl font-semibold mb-4 text-gray-700">API 设置</h2>
-          <div className="space-y-6">
-            {/* API Key Section */}
+    <div className="max-w-6xl mx-auto space-y-8">
+      {/* Page Header */}
+      <div className="text-center">
+        <h1 className="text-2xl md:text-3xl font-bold text-gray-900 mb-2">管理员设置</h1>
+        <p className="text-gray-600">管理系统配置和AI模型设置</p>
+      </div>
+
+      {/* API Settings Section */}
+      <div className="bg-white rounded-xl shadow-lg p-6 md:p-8">
+        <div className="flex items-center gap-3 mb-6">
+          <div className="w-8 h-8 bg-blue-100 rounded-lg flex items-center justify-center">
+            <svg className="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+            </svg>
+          </div>
+          <div>
+            <h2 className="text-xl font-semibold text-gray-900">API 设置</h2>
+            <p className="text-sm text-gray-600">配置AI服务和模型参数</p>
+          </div>
+        </div>
+
+        <div className="grid gap-6 md:grid-cols-2">
+          {/* API Key Section */}
+          <div className="space-y-3">
             <div>
-              <label htmlFor="apiKey" className="block text-sm font-medium text-gray-700 mb-1">
+              <label htmlFor="apiKey" className="block text-sm font-medium text-gray-700 mb-2">
                 OpenRouter API Key
               </label>
               <input
@@ -204,30 +221,33 @@ export default function AdminSettingsPage() {
                 id="apiKey"
                 value={apiKey}
                 onChange={(e) => setApiKey(e.target.value)}
-                className="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-primary focus:border-primary sm:text-sm"
-                placeholder="在此输入您的 API Key"
+                className="block w-full px-4 py-3 bg-white border border-gray-300 rounded-lg shadow-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary transition-colors"
+                placeholder="输入您的API Key"
               />
-              <div className="flex justify-end mt-2">
-                <button
-                  onClick={handleSaveApiKey}
-                  disabled={isSavingApiKey}
-                  className="inline-flex items-center justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-primary hover:bg-primary/90 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary disabled:opacity-50"
-                >
-                  {isSavingApiKey ? <Loader2 className="w-4 h-4 animate-spin" /> : '保存 API Key'}
-                </button>
-              </div>
             </div>
+            <div className="flex justify-end">
+              <button
+                onClick={handleSaveApiKey}
+                disabled={isSavingApiKey}
+                className="inline-flex items-center px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary/90 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+              >
+                {isSavingApiKey ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : null}
+                {isSavingApiKey ? '保存中...' : '保存 API Key'}
+              </button>
+            </div>
+          </div>
 
-            {/* Model Selection Section */}
+          {/* Model Selection Section */}
+          <div className="space-y-3">
             <div>
-              <label htmlFor="modelSelect" className="block text-sm font-medium text-gray-700 mb-1">
-                选择模型
+              <label htmlFor="modelSelect" className="block text-sm font-medium text-gray-700 mb-2">
+                AI 模型选择
               </label>
               <select
                 id="modelSelect"
                 value={selectedModel}
                 onChange={(e) => setSelectedModel(e.target.value)}
-                className="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-primary focus:border-primary sm:text-sm rounded-md"
+                className="block w-full px-4 py-3 bg-white border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary transition-colors"
               >
                 {availableModels.map((model) => (
                   <option key={model} value={model}>
@@ -235,64 +255,85 @@ export default function AdminSettingsPage() {
                   </option>
                 ))}
               </select>
-              <div className="flex justify-end mt-2">
-                <button
-                  onClick={handleSaveModel}
-                  disabled={isSavingModel}
-                  className="inline-flex items-center justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-primary hover:bg-primary/90 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary disabled:opacity-50"
-                >
-                  {isSavingModel ? <Loader2 className="w-4 h-4 animate-spin" /> : '保存模型'}
-                </button>
-              </div>
+            </div>
+            <div className="flex justify-end">
+              <button
+                onClick={handleSaveModel}
+                disabled={isSavingModel}
+                className="inline-flex items-center px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary/90 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+              >
+                {isSavingModel ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : null}
+                {isSavingModel ? '保存中...' : '保存模型'}
+              </button>
             </div>
           </div>
         </div>
-
-        {/* Prompt Settings Card */}
-        <div className="p-6 bg-gray-50 rounded-lg border border-gray-200 shadow-sm">
-          <h2 className="text-xl font-semibold mb-4 text-gray-700">Prompt 设置</h2>
-          <div className="space-y-6">
-            {/* Current System Prompt Section */}
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                当前Prompt提示
-              </label>
-              <div className="mt-1 p-3 bg-white rounded-md border border-gray-200 text-sm text-gray-800 whitespace-pre-wrap font-mono">
-                {currentSystemPrompt || '尚未设置Prompt提示。'}
-              </div>
-            </div>
-            {/* Edit System Prompt Section */}
-            <div>
-              <label htmlFor="systemPrompt" className="block text-sm font-medium text-gray-700 mb-1">
-                编辑Prompt提示
-              </label>
-              <textarea
-                id="systemPrompt"
-                value={systemPromptInput}
-                onChange={(e) => setSystemPromptInput(e.target.value)}
-                className="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-primary focus:border-primary sm:text-sm font-mono"
-                placeholder="在此输入新的系统提示"
-                rows={12}
-              />
-              <div className="flex justify-end mt-2">
-                <button
-                  onClick={handleSaveSystemPrompt}
-                  disabled={isSavingSystemPrompt}
-                  className="inline-flex items-center justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-primary hover:bg-primary/90 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary disabled:opacity-50"
-                >
-                  {isSavingSystemPrompt ? <Loader2 className="w-4 h-4 animate-spin" /> : '保存系统提示'}
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {message && (
-          <div className="text-center mt-4">
-            <p className="text-sm text-gray-600 bg-gray-100 rounded-md p-3 inline-block">{message}</p>
-          </div>
-        )}
       </div>
+
+      {/* Prompt Settings Section */}
+      <div className="bg-white rounded-xl shadow-lg p-6 md:p-8">
+        <div className="flex items-center gap-3 mb-6">
+          <div className="w-8 h-8 bg-green-100 rounded-lg flex items-center justify-center">
+            <svg className="w-5 h-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+            </svg>
+          </div>
+          <div>
+            <h2 className="text-xl font-semibold text-gray-900">Prompt 设置</h2>
+            <p className="text-sm text-gray-600">自定义AI助手的系统提示词</p>
+          </div>
+        </div>
+
+        <div className="space-y-6">
+          {/* Current System Prompt */}
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-3">
+              当前系统提示词
+            </label>
+            <div className="bg-gray-50 border border-gray-200 rounded-lg p-4">
+              <pre className="text-sm text-gray-800 whitespace-pre-wrap font-mono leading-relaxed">
+                {currentSystemPrompt || '尚未设置系统提示词。'}
+              </pre>
+            </div>
+          </div>
+
+          {/* Edit System Prompt */}
+          <div>
+            <label htmlFor="systemPrompt" className="block text-sm font-medium text-gray-700 mb-3">
+              编辑系统提示词
+            </label>
+            <textarea
+              id="systemPrompt"
+              value={systemPromptInput}
+              onChange={(e) => setSystemPromptInput(e.target.value)}
+              className="block w-full px-4 py-3 bg-white border border-gray-300 rounded-lg shadow-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary font-mono text-sm resize-vertical min-h-[200px]"
+              placeholder="输入新的系统提示词..."
+              rows={12}
+            />
+            <div className="flex justify-end mt-4">
+              <button
+                onClick={handleSaveSystemPrompt}
+                disabled={isSavingSystemPrompt}
+                className="inline-flex items-center px-6 py-3 bg-primary text-white rounded-lg hover:bg-primary/90 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary disabled:opacity-50 disabled:cursor-not-allowed transition-colors text-sm font-medium"
+              >
+                {isSavingSystemPrompt ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : null}
+                {isSavingSystemPrompt ? '保存中...' : '保存系统提示词'}
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Success/Error Messages */}
+      {message && (
+        <div className="max-w-md mx-auto">
+          <div className={`text-center p-4 rounded-lg ${
+            message.includes('成功') ? 'bg-green-50 text-green-800 border border-green-200' : 'bg-red-50 text-red-800 border border-red-200'
+          }`}>
+            <p className="text-sm font-medium">{message}</p>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

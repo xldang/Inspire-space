@@ -12,9 +12,11 @@ async function getUserIdFromSession() {
 }
 
 export async function GET() {
+  const startTime = Date.now();
+
   try {
     const userId = await getUserIdFromSession();
-    
+
     if (!userId) {
       return NextResponse.json({ error: '未授权' }, { status: 401 });
     }
@@ -37,11 +39,22 @@ export async function GET() {
       }
     });
 
-    return NextResponse.json({ inspirations });
+    const responseTime = Date.now() - startTime;
+    console.log(`API Response Time: ${responseTime}ms for ${inspirations.length} inspirations`);
+
+    // 添加缓存头以改善性能
+    return NextResponse.json(
+      { inspirations },
+      {
+        headers: {
+          'Cache-Control': 'private, max-age=30', // 缓存30秒
+        }
+      }
+    );
   } catch (error) {
     console.error('获取灵感列表失败:', error);
     return NextResponse.json(
-      { error: '获取数据失败' }, 
+      { error: '获取数据失败' },
       { status: 500 }
     );
   }
