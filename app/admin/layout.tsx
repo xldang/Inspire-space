@@ -17,7 +17,7 @@ export default function AdminLayout({
         <div className="flex justify-between items-center mb-6 container mx-auto px-4 py-4">
           <Link href="/" className="block">
             <div>
-              <h1 className="text-4xl font-bold text-gray-900">
+              <h1 className="text-2xl md:text-4xl font-bold text-gray-900 mb-1 md:mb-0">
                 ✨ 灵感空间
               </h1>
             </div>
