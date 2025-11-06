@@ -147,7 +147,7 @@ export default function IdeaDetailClient({ inspiration }: IdeaDetailClientProps)
                 <Sparkles className="w-6 h-6 text-primary" />
                 <h2 className="text-xl font-semibold text-gray-800 m-0">AI 初步建议</h2>
               </div>
-              <div className="mt-2 text-gray-700 h-96 overflow-y-auto">
+              <div className="mt-2 text-gray-700">
                 <ReactMarkdown>{inspiration.suggestion}</ReactMarkdown>
               </div>
             </section>
@@ -159,7 +159,7 @@ export default function IdeaDetailClient({ inspiration }: IdeaDetailClientProps)
                 <Rocket className="w-6 h-6 text-primary" />
                 <h2 className="text-xl font-semibold text-gray-800 m-0">灵感落地方案</h2>
               </div>
-              <div className="mt-2 text-gray-700 h-96 overflow-y-auto">
+              <div className="mt-2 text-gray-700">
                 <ReactMarkdown>{inspiration.implementationPlan}</ReactMarkdown>
               </div>
             </section>

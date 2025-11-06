@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import axios from 'axios';
 import { Loader2, Sparkles, Check, RefreshCw } from 'lucide-react';
+import ReactMarkdown from 'react-markdown';
 
 interface IdeaInputProps {
   onIdeaAdded: () => void;
@@ -127,10 +128,9 @@ export default function IdeaInput({
               AI建议的最小可实现方案 (由 {implementationModel} 生成)
             </h3>
             <div className="prose prose-sm max-w-none text-gray-800">
-              <div
-                className="whitespace-pre-wrap bg-gradient-to-br from-blue-50 to-purple-50 p-4 rounded-lg border border-blue-100"
-                dangerouslySetInnerHTML={{ __html: implementationPlan.replace(/\n/g, '<br/>') }}
-              />
+              <div className="bg-gradient-to-br from-blue-50 to-purple-50 p-4 rounded-lg border border-blue-100">
+                <ReactMarkdown>{implementationPlan}</ReactMarkdown>
+              </div>
             </div>
           </div>
 

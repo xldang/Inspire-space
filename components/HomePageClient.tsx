@@ -196,37 +196,71 @@ export default function HomePageClient() {
 
         {/* Stats Cards */}
         {isSignedIn && inspirations.length > 0 && (
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
-            <div className="bg-white rounded-xl p-4 shadow-sm border border-gray-100">
-              <div className="flex items-center gap-2 mb-1">
-                <Lightbulb className="w-5 h-5 text-primary" />
-                <span className="text-sm text-gray-600">总灵感</span>
+          <div className="w-full max-w-4xl mx-auto mb-6">
+            {/* Mobile: Compact horizontal layout */}
+            <div className="block md:hidden">
+              <div className="bg-white rounded-xl p-4 shadow-sm border border-gray-100">
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="flex items-center gap-2">
+                    <Lightbulb className="w-4 h-4 text-primary" />
+                    <span className="text-sm text-gray-600">总灵感</span>
+                    <span className="text-lg font-bold text-gray-900 ml-2">{stats.total}</span>
+                  </div>
+
+                  <div className="flex items-center gap-2">
+                    <Calendar className="w-4 h-4 text-gray-500" />
+                    <span className="text-sm text-gray-600">构想中</span>
+                    <span className="text-lg font-bold text-gray-900 ml-2">{stats.original}</span>
+                  </div>
+
+                  <div className="flex items-center gap-2">
+                    <Plus className="w-4 h-4 text-blue-500" />
+                    <span className="text-sm text-gray-600">进行中</span>
+                    <span className="text-lg font-bold text-gray-900 ml-2">{stats.building}</span>
+                  </div>
+
+                  <div className="flex items-center gap-2">
+                    <CheckCircle className="w-4 h-4 text-green-500" />
+                    <span className="text-sm text-gray-600">已达成</span>
+                    <span className="text-lg font-bold text-gray-900 ml-2">{stats.achieved}</span>
+                  </div>
+                </div>
               </div>
-              <p className="text-2xl font-bold text-gray-900">{stats.total}</p>
             </div>
 
-            <div className="bg-white rounded-xl p-4 shadow-sm border border-gray-100">
-              <div className="flex items-center gap-2 mb-1">
-                <Calendar className="w-5 h-5 text-gray-500" />
-                <span className="text-sm text-gray-600">构想中</span>
+            {/* Desktop: Original grid layout */}
+            <div className="hidden md:grid md:grid-cols-4 gap-4">
+              <div className="bg-white rounded-xl p-4 shadow-sm border border-gray-100">
+                <div className="flex items-center gap-2 mb-1">
+                  <Lightbulb className="w-5 h-5 text-primary" />
+                  <span className="text-sm text-gray-600">总灵感</span>
+                </div>
+                <p className="text-2xl font-bold text-gray-900">{stats.total}</p>
               </div>
-              <p className="text-2xl font-bold text-gray-900">{stats.original}</p>
-            </div>
 
-            <div className="bg-white rounded-xl p-4 shadow-sm border border-gray-100">
-              <div className="flex items-center gap-2 mb-1">
-                <Plus className="w-5 h-5 text-blue-500" />
-                <span className="text-sm text-gray-600">进行中</span>
+              <div className="bg-white rounded-xl p-4 shadow-sm border border-gray-100">
+                <div className="flex items-center gap-2 mb-1">
+                  <Calendar className="w-5 h-5 text-gray-500" />
+                  <span className="text-sm text-gray-600">构想中</span>
+                </div>
+                <p className="text-2xl font-bold text-gray-900">{stats.original}</p>
               </div>
-              <p className="text-2xl font-bold text-gray-900">{stats.building}</p>
-            </div>
 
-            <div className="bg-white rounded-xl p-4 shadow-sm border border-gray-100">
-              <div className="flex items-center gap-2 mb-1">
-                <CheckCircle className="w-5 h-5 text-green-500" />
-                <span className="text-sm text-gray-600">已达成</span>
+              <div className="bg-white rounded-xl p-4 shadow-sm border border-gray-100">
+                <div className="flex items-center gap-2 mb-1">
+                  <Plus className="w-5 h-5 text-blue-500" />
+                  <span className="text-sm text-gray-600">进行中</span>
+                </div>
+                <p className="text-2xl font-bold text-gray-900">{stats.building}</p>
               </div>
-              <p className="text-2xl font-bold text-gray-900">{stats.achieved}</p>
+
+              <div className="bg-white rounded-xl p-4 shadow-sm border border-gray-100">
+                <div className="flex items-center gap-2 mb-1">
+                  <CheckCircle className="w-5 h-5 text-green-500" />
+                  <span className="text-sm text-gray-600">已达成</span>
+                </div>
+                <p className="text-2xl font-bold text-gray-900">{stats.achieved}</p>
+              </div>
             </div>
           </div>
         )}
@@ -250,46 +284,48 @@ export default function HomePageClient() {
 
         {/* Filter Tabs */}
         {isSignedIn && inspirations.length > 0 && (
-          <div className="flex gap-2 flex-wrap">
-            {[{
-              value: 'ALL',
-              label: '全部',
-              count: stats.total
-            },
-            {
-              value: 'ORIGINAL',
-              label: '原始构想',
-              count: stats.original
-            },
-            {
-              value: 'BUILDING',
-              label: '筑梦中',
-              count: stats.building
-            },
-            {
-              value: 'ACHIEVED',
-              label: '已达成',
-              count: stats.achieved
-            },
-            ].map((tab) => (
-              <button
-                key={tab.value}
-                onClick={() => setFilter(tab.value as any)}
-                className={`px-4 py-2 rounded-lg transition-colors ${
-                  filter === tab.value
-                    ? 'bg-primary text-white'
-                    : 'bg-white text-gray-600 hover:bg-gray-50'
-                }`}
-              >
-                {tab.label} ({tab.count})
-              </button>
-            ))}
+          <div className="w-full max-w-4xl mx-auto">
+            <div className="flex gap-2 flex-wrap">
+              {[{
+                value: 'ALL',
+                label: '全部',
+                count: stats.total
+              },
+              {
+                value: 'ORIGINAL',
+                label: '原始构想',
+                count: stats.original
+              },
+              {
+                value: 'BUILDING',
+                label: '筑梦中',
+                count: stats.building
+              },
+              {
+                value: 'ACHIEVED',
+                label: '已达成',
+                count: stats.achieved
+              },
+              ].map((tab) => (
+                <button
+                  key={tab.value}
+                  onClick={() => setFilter(tab.value as any)}
+                  className={`px-4 py-2 rounded-lg transition-colors ${
+                    filter === tab.value
+                      ? 'bg-primary text-white'
+                      : 'bg-white text-gray-600 hover:bg-gray-50'
+                  }`}
+                >
+                  {tab.label} ({tab.count})
+                </button>
+              ))}
+            </div>
           </div>
         )}
 
         {/* Inspirations List */}
         {isSignedIn ? (
-          <section className="space-y-4">
+          <section className="w-full max-w-4xl mx-auto space-y-4">
             {filteredInspirations.length > 0 ? (
               <div className="grid gap-4">
                 {filteredInspirations.map((inspiration) => (
@@ -310,7 +346,7 @@ export default function HomePageClient() {
                     {inspirations.length === 0 ? '开始记录你的第一个灵感' : '没有符合条件的灵感'}
                   </h3>
                   <p className="text-gray-600 mb-6">
-                    {inspirations.length === 0 
+                    {inspirations.length === 0
                       ? '每一个伟大的想法都始于一个小小的灵感，现在就开始吧！'
                       : '尝试调整筛选条件或添加新的灵感。'
                     }

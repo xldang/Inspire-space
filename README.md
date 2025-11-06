@@ -101,6 +101,73 @@
     ```
     应用将在 [http://localhost:3000](http://localhost:3000) 上运行。
 
+### 本地开发环境设置及问题排查
+
+#### 常见问题及解决方案
+
+1. **数据库连接问题**:
+   - **问题**: `Can't reach database server` 或环境变量未找到
+   - **解决方案**:
+     - 确保 `.env.local` 文件存在且配置正确
+     - 如果使用 Vercel Postgres，使用 `PRISMA_DATABASE_URL` 而不是 `DATABASE_URL`
+     - 使用 `npx dotenv -e .env.local -- npx prisma db push` 来加载环境变量
+
+2. **NextAuth 认证失败**:
+   - **问题**: 登录时返回 401 Unauthorized
+   - **解决方案**:
+     - 确保数据库中有用户数据，可以通过 API 或直接在数据库中创建测试用户
+     - 检查 `NEXTAUTH_SECRET` 和 `NEXTAUTH_URL` 配置是否正确
+     - 确认开发服务器已重启以加载新的环境变量
+
+3. **依赖安装问题**:
+   - **问题**: `next` 命令找不到
+   - **解决方案**: 使用 `npx next dev` 而不是 `npm run dev`
+
+4. **数据库迁移问题**:
+   - **问题**: Prisma 无法读取环境变量
+   - **解决方案**: 使用 `npx dotenv -e .env.local -- npx prisma [command]` 来确保环境变量被正确加载
+
+#### 测试账户设置
+
+为了方便本地开发，可以创建一个测试用户：
+
+```bash
+# 在项目根目录下运行
+npx dotenv -e .env.local -- node -e "
+const { PrismaClient } = require('@prisma/client');
+const bcrypt = require('bcryptjs');
+
+async function createTestUser() {
+  const prisma = new PrismaClient();
+  try {
+    const hashedPassword = await bcrypt.hash('123456', 10);
+    const user = await prisma.user.create({
+      data: {
+        name: '测试用户',
+        email: 'test@example.com',
+        password: hashedPassword,
+      },
+    });
+    console.log('测试用户创建成功:', user.email);
+  } catch (error) {
+    console.error('创建用户失败:', error);
+  } finally {
+    await prisma.\$disconnect();
+  }
+}
+
+createTestUser();
+"
+```
+
+**测试账户信息**:
+- 邮箱: `test@example.com`
+- 密码: `123456`
+
+#### 环境变量安全说明
+
+⚠️ **重要**: `.env.local` 文件已配置在 `.gitignore` 中，**切勿**将其提交到代码仓库。此文件包含敏感信息如数据库密码和 API 密钥。
+
 ## 🔧 开发命令
 
 ```bash
