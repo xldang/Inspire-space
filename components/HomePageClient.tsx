@@ -157,10 +157,10 @@ export default function HomePageClient() {
         <div className="flex justify-between items-center mb-6">
           <Link href="/" className="block">
             <div>
-              <h1 className="text-4xl font-bold text-gray-900 mb-2">
+              <h1 className="text-2xl md:text-4xl font-bold text-gray-900 mb-1 md:mb-2">
                 ✨ 灵感空间
               </h1>
-              <p className="text-gray-600 text-lg">
+              <p className="text-gray-600 text-sm md:text-lg hidden sm:block">
                 记录并实现你的每一个灵感
               </p>
             </div>
